@@ -1,3 +1,8 @@
+# Resumen de Laboratorios por Módulo
+
+Este documento contiene una compilación y resumen estructurado de todos los laboratorios prácticos descritos en el plan de formación, organizados por nivel y módulo.
+
+---
 
 🟢 Fundamental Level
 Entorno y Herramientas: Proyecto con Poetry, entornos virtuales, black, isort, ruff y pre-commit.
