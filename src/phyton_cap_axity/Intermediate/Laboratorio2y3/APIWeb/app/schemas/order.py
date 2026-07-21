@@ -1,8 +1,7 @@
 from datetime import datetime
 
-from pydantic import BaseModel, ConfigDict, Field, field_validator
-
 from app.models.order import OrderStatus
+from pydantic import BaseModel, ConfigDict, Field, field_validator
 
 
 class OrderBase(BaseModel):

@@ -6,14 +6,16 @@ Importa Base.metadata desde models.py para que:
     BD contra los modelos y generar el diff automaticamente.
   - 'alembic upgrade/downgrade' sepan que metadata usar.
 """
+
+import os
+
+# Permite 'import models' al correr alembic desde la raiz del proyecto
+import sys
 from logging.config import fileConfig
 
 from alembic import context
 from sqlalchemy import engine_from_config, pool
 
-# Permite 'import models' al correr alembic desde la raiz del proyecto
-import sys
-import os
 sys.path.append(os.getcwd())
 
 from models import Base  # noqa: E402

@@ -1,8 +1,7 @@
-from sqlalchemy import select
-from sqlalchemy.ext.asyncio import AsyncSession
-
 from app.models.order import Order
 from app.schemas.order import OrderCreate, OrderUpdate
+from sqlalchemy import select
+from sqlalchemy.ext.asyncio import AsyncSession
 
 
 async def create_order(db: AsyncSession, order_in: OrderCreate, owner_id: int) -> Order:
@@ -21,7 +20,9 @@ async def get_order(db: AsyncSession, order_id: int, owner_id: int) -> Order | N
     return result.scalar_one_or_none()
 
 
-async def list_orders(db: AsyncSession, owner_id: int, skip: int = 0, limit: int = 100) -> list[Order]:
+async def list_orders(
+    db: AsyncSession, owner_id: int, skip: int = 0, limit: int = 100
+) -> list[Order]:
     result = await db.execute(
         select(Order).where(Order.owner_id == owner_id).offset(skip).limit(limit)
     )

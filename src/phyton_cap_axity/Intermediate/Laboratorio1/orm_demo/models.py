@@ -11,6 +11,7 @@ mismo que se pasa a create_all()/drop_all().
 Relaciones modeladas:
     User (1) ----< (N) Order (1) ----< (N) OrderItem
 """
+
 from __future__ import annotations
 
 from datetime import datetime

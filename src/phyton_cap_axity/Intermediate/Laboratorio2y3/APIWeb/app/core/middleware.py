@@ -4,6 +4,7 @@ Middlewares custom.
 process_time_middleware: agrega header X-Process-Time (útil para monitoreo).
 Se registra con @app.middleware("http") en main.py.
 """
+
 import time
 from collections.abc import Callable
 

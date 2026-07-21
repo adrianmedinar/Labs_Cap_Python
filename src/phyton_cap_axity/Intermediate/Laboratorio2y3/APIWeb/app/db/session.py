@@ -6,10 +6,9 @@ lo que permite que los tests inyecten otra URL (SQLite en memoria) sin tocar
 el resto de la app.
 """
 
+from app.core.config import settings
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
 from sqlalchemy.orm import DeclarativeBase
-
-from app.core.config import settings
 
 
 class Base(DeclarativeBase):

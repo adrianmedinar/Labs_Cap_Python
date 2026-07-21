@@ -8,7 +8,6 @@ python -m pyright tipado.py
 
 """
 
-
 from typing import Literal, Optional, Protocol, TypedDict, Union
 
 
@@ -33,8 +32,7 @@ def iniciar(modo: Modo) -> None:
 
 # ----- Protocol -----
 class Dibujable(Protocol):
-    def dibujar(self) -> str:
-        ...
+    def dibujar(self) -> str: ...
 
 
 class Circulo:
@@ -85,17 +83,24 @@ iniciar("staging")  # type: ignore[arg-type]  # pyright: ignore[reportArgumentTy
 usuario_incompleto: Usuario = {"id": 2, "nombre": "Luis"}  # error: falta "activo"
 
 # 3. Tipo incorrecto en TypedDict
-usuario_mal: Usuario = {"id": "3", "nombre": "Eva", "activo": True}  # error: id debe ser int
+usuario_mal: Usuario = {
+    "id": "3",
+    "nombre": "Eva",
+    "activo": True,
+}  # error: id debe ser int
+
 
 # 4. Objeto que no cumple el Protocol (falta el método dibujar)
 class Triangulo:
     def pintar(self) -> str:
         return "Pintando triángulo"
 
+
 renderizar(Triangulo())  # error: no tiene método dibujar()
 
 # 5. Union mal usado
 procesar_valor(3.14)  # error: float no es int ni str
+
 
 # 6. Optional sin chequear antes de usar como str
 def largo_nombre(id: int) -> int:

@@ -258,9 +258,11 @@ def compute_metrics(rows: list[dict], tz: ZoneInfo, logger: logging.Logger) -> d
                 "promedio": round(statistics.mean(numeric_values), 4),
                 "min": min(numeric_values),
                 "max": max(numeric_values),
-                "desv.std": round(statistics.pstdev(numeric_values), 4)
-                if len(numeric_values) > 1
-                else 0.0,
+                "desv.std": (
+                    round(statistics.pstdev(numeric_values), 4)
+                    if len(numeric_values) > 1
+                    else 0.0
+                ),
             }
         else:
             counter = collections.Counter(values)

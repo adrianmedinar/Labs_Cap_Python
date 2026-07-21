@@ -8,6 +8,7 @@ un Session por operacion). Para evitarlo usamos StaticPool, que le
 indica a SQLAlchemy que reutilice SIEMPRE la misma conexion fisica
 mientras el proceso este vivo.
 """
+
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.pool import StaticPool

@@ -10,6 +10,7 @@ Máquina de estados:
 
 `shipped` y `cancelled` son estados terminales: no admiten más transiciones.
 """
+
 from app.models.order import OrderStatus
 
 # Mapa de transiciones permitidas: estado actual -> conjunto de estados destino válidos.

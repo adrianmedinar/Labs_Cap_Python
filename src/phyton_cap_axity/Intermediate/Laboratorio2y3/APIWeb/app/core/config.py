@@ -2,7 +2,9 @@
 Configuración central de la aplicación.
 Usa pydantic-settings para cargar variables de entorno de forma tipada y validada.
 """
+
 from functools import lru_cache
+
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
