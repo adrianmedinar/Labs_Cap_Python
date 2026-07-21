@@ -1,0 +1,12 @@
+.venv/
+__pycache__/
+*.pyc
+.ruff_cache/
+.mypy_cache/
+src/phyton_cap_axity/Laboratorio6/salida/
+src/phyton_cap_axity/Laboratorio6/logs/
+src/phyton_cap_axity/Laboratorio6/datos_csv.csv
+src/phyton_cap_axity/Laboratorio3/proceso.log
+src/phyton_cap_axity/Laboratorio2/salida.json
+docker-compose.yml
+retry-test.yaml

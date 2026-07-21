@@ -1,0 +1,27 @@
+[
+    {
+        "categoria": "ventas",
+        "monto": 150.5,
+        "fecha": "2024-01-15",
+        "email": "cliente1@example.com"
+    },
+    {
+        "categoria": "ventas",
+        "monto": "320.75 USD",
+        "fecha": "2024-01-20"
+    },
+    {
+        "categoria": "gastos",
+        "monto": 45,
+        "fecha": "2024-01-16",
+        "email": "prov@example.com"
+    },
+    {
+        "categoria": "gastos",
+        "monto": 10.25
+    },
+    {
+        "categoria": "ventas",
+        "monto": 90
+    }
+]

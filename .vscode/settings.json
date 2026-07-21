@@ -1,0 +1,17 @@
+{
+    // Indicar a VS Code que use el entorno virtual de Poetry
+  "ruff.path": ["C:\\Users\\Adrian.medina\\phyton_cap_axity\\.venv\\Scripts\\ruff.exe"],
+  "black-formatter.path": ["C:\\Users\\Adrian.medina\\phyton_cap_axity\\.venv\\Scripts\\black.exe"],
+  "python.defaultInterpreterPath": "C:\\Users\\Adrian.medina\\phyton_cap_axity\\.venv\\Scripts\\python.exe",
+
+  "[python]": {
+    "editor.defaultFormatter": "charliermarsh.ruff",
+    "editor.formatOnSave": true,
+    "editor.codeActionsOnSave": {
+      "source.fixAll": "explicit",
+      "source.organizeImports": "explicit"
+    }
+  },
+  "ruff.lint.enable": true,
+  "ruff.format.enable": true
+}

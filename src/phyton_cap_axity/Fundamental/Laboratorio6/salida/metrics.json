@@ -1,0 +1,71 @@
+{
+  "generated_at": "2026-07-08T09:54:49.279210-06:00",
+  "timezone": "America/Mexico_City",
+  "total_rows": 10,
+  "columns": {
+    "id": {
+      "tipo": "numeric",
+      "total": 10,
+      "suma": 55.0,
+      "promedio": 5.5,
+      "min": 1.0,
+      "max": 10.0,
+      "desv.std": 2.8723
+    },
+    "producto": {
+      "type": "categorical",
+      "unique_values": 9,
+      "most_common": [
+        [
+          "Mouse",
+          2
+        ],
+        [
+          "Laptop",
+          1
+        ],
+        [
+          "Silla",
+          1
+        ]
+      ]
+    },
+    "categoria": {
+      "type": "categorical",
+      "unique_values": 3,
+      "most_common": [
+        [
+          "Electronica",
+          6
+        ],
+        [
+          "Muebles",
+          3
+        ],
+        [
+          "Hogar",
+          1
+        ]
+      ]
+    },
+    "precio": {
+      "tipo": "numeric",
+      "total": 10,
+      "suma": 34355.49,
+      "promedio": 3435.549,
+      "min": 299.0,
+      "max": 15999.5,
+      "desv.std": 4572.7891
+    },
+    "cantidad": {
+      "tipo": "numeric",
+      "total": 10,
+      "suma": 57.0,
+      "promedio": 5.7,
+      "min": 2.0,
+      "max": 12.0,
+      "desv.std": 3.1953
+    }
+  },
+  "processing_seconds": 0.0
+}

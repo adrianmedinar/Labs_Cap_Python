@@ -1,0 +1,35 @@
+{
+  "total_registros": 5,
+  "agregacion": "suma",
+  "resultados_por_categoria": {
+    "ventas": 561.25,
+    "gastos": 55.25
+  },
+  "registros": [
+    {
+      "categoria": "ventas",
+      "monto": 150.5,
+      "fecha": "2024-01-15",
+      "email": "cliente1@example.com"
+    },
+    {
+      "categoria": "ventas",
+      "monto": 320.75,
+      "fecha": "2024-01-20"
+    },
+    {
+      "categoria": "gastos",
+      "monto": 45.0,
+      "fecha": "2024-01-16",
+      "email": "prov@example.com"
+    },
+    {
+      "categoria": "gastos",
+      "monto": 10.25
+    },
+    {
+      "categoria": "ventas",
+      "monto": 90.0
+    }
+  ]
+}

@@ -1,0 +1,11 @@
+# Configuración opcional del pipeline
+# Si no se pasa --config, se usan estos mismos valores por defecto.
+# valor de timeszone: America/Tijuana, America/Argentina/Buenos_Aires
+
+timezone: "America/Mexico_City"
+json_indent: 2
+
+# Comando de post-proceso (opcional). Se ejecuta con subprocess.run
+# (lista de argumentos, sin shell=True, por seguridad).
+# {output} se reemplaza por la ruta real del JSON generado.
+post_process_command: ["python", "-m", "gzip", "{output}"]

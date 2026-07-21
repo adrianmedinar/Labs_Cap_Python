@@ -1,0 +1,38 @@
+[project]
+name = "phyton-cap-axity"
+version = "0.1.0"
+description = ""
+authors = [
+    {name = "Adrian Medina",email = "adrian.medina@axity.com"}
+]
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+]
+
+[tool.poetry]
+packages = [{include = "phyton_cap_axity", from = "src"}]
+
+[tool.black]
+line-length = 88
+target-version = ['py312']
+
+[tool.ruff]
+line-length = 88
+target-version = "py312"
+
+[tool.isort]
+profile = "black"
+line_length = 88
+
+[build-system]
+requires = ["poetry-core>=2.0.0,<3.0.0"]
+build-backend = "poetry.core.masonry.api"
+
+[dependency-groups]
+dev = [
+    "black (>=26.5.1,<27.0.0)",
+    "isort (>=8.0.1,<9.0.0)",
+    "ruff (>=0.15.20,<0.16.0)",
+    "pre-commit (>=4.6.0,<5.0.0)"
+]
