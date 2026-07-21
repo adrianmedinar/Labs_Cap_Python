@@ -35,7 +35,7 @@ tests/
 ├── test_auth.py               # Tests de registro/login
 └── test_orders.py             # Tests CRUD + aislamiento entre usuarios
 ```
-
+Ejecutar la API en equipo local
 
 ```bash
 uvicorn app.main:app --reload
