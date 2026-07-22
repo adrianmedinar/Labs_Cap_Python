@@ -85,7 +85,7 @@ infraestructura/API), donde las dependencias siempre apuntan hacia adentro:
 |---|---|---|
 | Python | 3.12 | usa `sqlite+aiosqlite` por defecto para desarrollo local |
 | pip | 23+ | para instalar en modo editable |
-| PostgreSQL | 14+ | opcional en local; requerido en producción (ver `.env.example`) |
+| PostgreSQL | 14+ | opcional en local |
 | Git | cualquiera | |
 
 No se requiere Docker para correr localmente (SQLite funciona out-of-the-box),
