@@ -101,7 +101,7 @@ git clone <url-del-repo>
 cd purchase-orders-api
 
 # 2. Crear y activar un entorno virtual
-python3 -m venv .venv
+python -m venv .venv
 source .venv/bin/activate        # Windows: .venv\Scripts\activate
 
 # 3. Instalar el proyecto en modo editable + dependencias de desarrollo
