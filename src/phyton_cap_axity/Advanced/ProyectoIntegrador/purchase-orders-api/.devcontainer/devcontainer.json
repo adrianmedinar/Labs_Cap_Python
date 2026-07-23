@@ -1,0 +1,51 @@
+{
+  "name": "Purchase Orders API",
+  "image": "mcr.microsoft.com/devcontainers/python:1-3.12-bullseye",
+
+  "features": {
+    "ghcr.io/devcontainers/features/github-cli:1": {}
+  },
+
+  "forwardPorts": [8000, 5432],
+  "portsAttributes": {
+    "8000": {
+      "label": "Purchase Orders API",
+      "onAutoForward": "notify"
+    },
+    "5432": {
+      "label": "PostgreSQL (opcional, ver docker-compose.yml)",
+      "onAutoForward": "silent"
+    }
+  },
+
+  "postCreateCommand": "bash .devcontainer/post-create.sh",
+
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "ms-python.python",
+        "ms-python.vscode-pylance",
+        "charliermarsh.ruff",
+        "matangover.mypy",
+        "tamasfe.even-better-toml",
+        "humao.rest-client",
+        "eamodio.gitlens"
+      ],
+      "settings": {
+        "python.defaultInterpreterPath": "${containerWorkspaceFolder}/.venv/bin/python",
+        "python.testing.pytestEnabled": true,
+        "python.testing.pytestArgs": ["tests"],
+        "editor.formatOnSave": true,
+        "[python]": {
+          "editor.defaultFormatter": "charliermarsh.ruff",
+          "editor.codeActionsOnSave": {
+            "source.organizeImports": "explicit",
+            "source.fixAll.ruff": "explicit"
+          }
+        }
+      }
+    }
+  },
+
+  "remoteUser": "vscode"
+}

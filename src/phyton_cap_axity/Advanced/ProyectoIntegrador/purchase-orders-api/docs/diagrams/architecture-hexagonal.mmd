@@ -1,0 +1,45 @@
+%%{init: {'theme': 'base', 'themeVariables': {'fontSize': '16px'}}}%%
+flowchart TB
+    subgraph API["🌐 API — FastAPI"]
+        direction TB
+        A1["routers/<br/>auth · suppliers · purchase-orders"]
+        A2["schemas/<br/>Pydantic request/response"]
+        A3["dependencies.py<br/>DI + JWT (OAuth2PasswordBearer)"]
+        A4["error_handlers.py<br/>excepción → HTTP"]
+    end
+
+    subgraph APP["⚙️ Aplicación — Casos de Uso"]
+        direction TB
+        U1["use_cases/<br/>Create, Submit, Approve, Reject,<br/>Send, ConfirmReceipt, Close, Cancel,<br/>Login, RegisterUser, Queries"]
+        U2["dtos/<br/>Commands & Results (dataclasses)"]
+        U3["mappers.py"]
+    end
+
+    subgraph DOM["💎 Dominio — Núcleo de Negocio (puro)"]
+        direction TB
+        D1["entities/<br/>PurchaseOrder · Supplier · User"]
+        D2["value_objects/<br/>Money · LineItem · PurchaseOrderStatus"]
+        D3["services/<br/>ApprovalPolicy"]
+        D4["ports/ (interfaces)<br/>Repositories · PasswordHasher ·<br/>TokenProvider · UnitOfWork"]
+        D5["exceptions/"]
+    end
+
+    subgraph INFRA["🔌 Infraestructura — Adaptadores"]
+        direction TB
+        I1["db/<br/>SQLAlchemy models · repos · UoW"]
+        I2["security/<br/>JwtTokenProvider (PyJWT)<br/>BcryptPasswordHasher (passlib)"]
+        I3["container.py<br/>Composition Root"]
+        I4["config.py<br/>Settings (pydantic-settings)"]
+    end
+
+    API -->|"invoca"| APP
+    APP -->|"depende de<br/>(interfaces)"| D4
+    I1 -.->|"implementa"| D4
+    I2 -.->|"implementa"| D4
+    I3 -.->|"ensambla e inyecta"| A3
+    I3 -.->|"ensambla e inyecta"| U1
+
+    style DOM fill:#e8f4ea,stroke:#2e7d32,stroke-width:2px
+    style APP fill:#e3f2fd,stroke:#1565c0,stroke-width:2px
+    style API fill:#fff3e0,stroke:#ef6c00,stroke-width:2px
+    style INFRA fill:#f3e5f5,stroke:#6a1b9a,stroke-width:2px

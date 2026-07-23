@@ -21,18 +21,22 @@ DRAFT --submit--> PENDING_APPROVAL --approve--> APPROVED --send-to-supplier--> S
 ## Índice
 
 1. [Arquitectura](#arquitectura)
-2. [Requisitos](#requisitos)
-3. [Instalación](#instalación)
-4. [Configuración (variables de entorno)](#configuración-variables-de-entorno)
-5. [Migraciones de base de datos](#migraciones-de-base-de-datos)
-6. [Ejecutar la API](#ejecutar-la-api)
-7. [Uso rápido (curl)](#uso-rápido-curl)
-8. [Ejecutar pruebas](#ejecutar-pruebas)
-9. [Calidad de código (lint / tipado)](#calidad-de-código-lint--tipado)
-10. [Auditoría de dependencias](#auditoría-de-dependencias)
-11. [Estructura del proyecto](#estructura-del-proyecto)
-12. [Reglas de negocio](#reglas-de-negocio)
-13. [Solución de problemas](#solución-de-problemas)
+2. [Diagramas](#diagramas)
+3. [Requisitos](#requisitos)
+4. [Instalación](#instalación)
+5. [Configuración (variables de entorno)](#configuración-variables-de-entorno)
+6. [Migraciones de base de datos](#migraciones-de-base-de-datos)
+7. [Ejecutar la API](#ejecutar-la-api)
+8. [Uso rápido (curl)](#uso-rápido-curl)
+9. [Ejecutar pruebas](#ejecutar-pruebas)
+10. [Calidad de código (lint / tipado)](#calidad-de-código-lint--tipado)
+11. [Auditoría de dependencias](#auditoría-de-dependencias)
+12. [CI/CD](#cicd)
+13. [Docker y Docker Compose](#docker-y-docker-compose)
+14. [GitHub Codespaces](#github-codespaces)
+15. [Estructura del proyecto](#estructura-del-proyecto)
+16. [Reglas de negocio](#reglas-de-negocio)
+17. [Solución de problemas](#solución-de-problemas)
 
 ---
 
@@ -76,6 +80,15 @@ infraestructura/API), donde las dependencias siempre apuntan hacia adentro:
   `BcryptPasswordHasher` (passlib), y el `Container` (composition root).
 - **API**: FastAPI expone los casos de uso vía HTTP, traduce DTOs ↔ schemas
   Pydantic, y traduce excepciones de negocio a códigos HTTP.
+
+---
+
+## Diagramas
+
+Los diagramas completos (arquitectura, máquina de estados, secuencia de un
+flujo de aprobación, modelo entidad-relación y pipeline de CI/CD) están en
+**[`docs/diagrams/README.md`](docs/diagrams/README.md)**, escritos en
+Mermaid y renderizados automáticamente al verlos en GitHub.
 
 ---
 
@@ -174,6 +187,8 @@ alembic downgrade base
 # Modo desarrollo (recarga automática)
 uvicorn purchase_orders.api.main:app --reload --host 0.0.0.0 --port 8000
 
+```
+
 Una vez arriba:
 
 - **Swagger UI**: http://localhost:8000/docs
@@ -205,20 +220,20 @@ curl -X POST "$BASE_URL/auth/register" -H "Content-Type: application/json" -d '{
 
 # 2. Login (form-urlencoded, NO json)
 TOKEN=$(curl -s -X POST "$BASE_URL/auth/login" \
-  -d "username=jane&password=secret123" | python3 -c "import sys,json; print(json.load(sys.stdin)['access_token'])")
+  -d "username=jane&password=secret123" | python -c "import sys,json; print(json.load(sys.stdin)['access_token'])")
 
 # 3. Crear un proveedor
 SUPPLIER_ID=$(curl -s -X POST "$BASE_URL/suppliers" \
   -H "Authorization: Bearer $TOKEN" -H "Content-Type: application/json" \
   -d '{"name": "Acme Corp", "tax_id": "RFC-123", "email": "ventas@acme.com"}' \
-  | python3 -c "import sys,json; print(json.load(sys.stdin)['id'])")
+  | python -c "import sys,json; print(json.load(sys.stdin)['id'])")
 
 # 4. Crear una orden de compra
 ORDER_ID=$(curl -s -X POST "$BASE_URL/purchase-orders" \
   -H "Authorization: Bearer $TOKEN" -H "Content-Type: application/json" \
   -d "{\"supplier_id\": \"$SUPPLIER_ID\", \"currency\": \"USD\", \"line_items\": [
         {\"sku\": \"SKU-1\", \"description\": \"Laptop\", \"quantity\": 2, \"unit_price\": \"1500.00\"}
-      ]}" | python3 -c "import sys,json; print(json.load(sys.stdin)['id'])")
+      ]}" | python -c "import sys,json; print(json.load(sys.stdin)['id'])")
 
 # 5. Enviar a aprobación y aprobar
 curl -X POST "$BASE_URL/purchase-orders/$ORDER_ID/submit" -H "Authorization: Bearer $TOKEN"
@@ -280,9 +295,101 @@ mypy src
 pip-audit
 ```
 
-Revisa vulnerabilidades conocidas (base de datos OSV/PyPI Advisory) en todas
-las dependencias instaladas. En CI, este comando corre en cada build y su
-reporte se guarda como artefacto (ver pipeline de CI/CD).
+Revisa vulnerabilidades conocidas (bases de datos OSV / PyPA Advisory) en
+todas las dependencias instaladas. Ver **[`docs/audit/README.md`](docs/audit/README.md)**
+para la evidencia completa de la última auditoría realizada (incluye
+vulnerabilidades reales encontradas y su remediación) y los artefactos:
+[`pip-audit-report.json`](docs/audit/pip-audit-report.json),
+[`pip-audit-report.txt`](docs/audit/pip-audit-report.txt) y
+[`requirements-freeze-audited.txt`](docs/audit/requirements-freeze-audited.txt).
+
+Este comando también corre automáticamente:
+- En **cada push/PR** (job `dependency-audit` en CI) — **falla el build**
+  si aparece una vulnerabilidad conocida.
+- **Semanalmente** (cron), para detectar CVEs publicados después del
+  último cambio de código.
+- **Dependabot** (`.github/dependabot.yml`) abre PRs semanales de
+  actualización de dependencias de Python, GitHub Actions y la imagen
+  Docker base.
+
+---
+
+## CI/CD
+
+El pipeline (`.github/workflows/ci.yml`) corre en cada push/PR a `main` y
+`develop`, y semanalmente por cron. Jobs:
+
+| Job | Qué hace | Bloquea el build si falla |
+|---|---|---|
+| `lint` | `ruff check` + `ruff format --check` | Sí |
+| `typecheck` | `mypy src` | Sí |
+| `test` | Suite completa (115 pruebas) + cobertura (umbral 80%), publica `coverage.xml` como artefacto | Sí |
+| `dependency-audit` | `pip-audit`, publica el reporte JSON como artefacto (retención 90 días) | Sí |
+| `migration-check` | `alembic upgrade head` → `downgrade base` → `upgrade head`, verifica reversibilidad | Sí |
+| `build` | Construye paquete Python (`sdist`+`wheel`) y la imagen Docker (sin publicar); depende de todos los anteriores | Sí |
+| `publish-image` | Publica la imagen en GHCR (`ghcr.io/<owner>/<repo>`), solo en push a `main` | — |
+
+```bash
+# Reproducir localmente lo que hace el job `test` de CI
+pytest --cov-report=xml --cov-report=term-missing
+
+# Reproducir el job `migration-check`
+DATABASE_URL="sqlite+aiosqlite:///./ci_check.db" JWT_SECRET_KEY="local-test-secret-32-characters-ok" alembic upgrade head
+DATABASE_URL="sqlite+aiosqlite:///./ci_check.db" JWT_SECRET_KEY="local-test-secret-32-characters-ok" alembic downgrade base
+```
+
+---
+
+## Docker y Docker Compose
+
+```bash
+# Levantar API + PostgreSQL (con migración automática al iniciar)
+docker compose up --build
+
+# La API queda disponible en http://localhost:8000/docs
+
+# Detener y limpiar
+docker compose down          # conserva el volumen de datos de Postgres
+docker compose down -v       # también elimina el volumen (borra los datos)
+```
+
+El `Dockerfile` es multi-stage: una etapa `builder` instala las
+dependencias en un prefix aislado, y la etapa `runtime` final es una
+imagen mínima (`python:3.12-slim`) que corre como usuario no-root y
+expone un `HEALTHCHECK` sobre `/health`.
+
+Para construir y correr solo la imagen (usando SQLite, sin Postgres):
+
+```bash
+docker build -t purchase-orders-api .
+docker run -p 8000:8000 \
+  -e DATABASE_URL="sqlite+aiosqlite:////app/purchase_orders.db" \
+  -e JWT_SECRET_KEY="$(openssl rand -hex 32)" \
+  purchase-orders-api
+```
+
+---
+
+## GitHub Codespaces
+
+El proyecto incluye `.devcontainer/devcontainer.json`, por lo que puedes
+abrirlo directamente en un Codespace (botón **Code → Codespaces → Create
+codespace** en GitHub) sin configuración manual:
+
+1. El `postCreateCommand` (`.devcontainer/post-create.sh`) automáticamente:
+   - crea el entorno virtual e instala todas las dependencias,
+   - genera un `.env` con SQLite + un `JWT_SECRET_KEY` aleatorio,
+   - aplica las migraciones (`alembic upgrade head`).
+2. Al terminar, solo falta:
+   ```bash
+   source .venv/bin/activate
+   uvicorn purchase_orders.api.main:app --reload --host 0.0.0.0 --port 8000
+   ```
+3. El puerto `8000` se reenvía automáticamente (verás una notificación de
+   VS Code); ábrelo para llegar a `/docs`.
+
+El devcontainer viene preconfigurado con extensiones de VS Code para
+Python, Ruff (lint + formato al guardar) y mypy.
 
 ---
 
@@ -321,6 +428,17 @@ purchase-orders-api/
 │   ├── support/fakes.py            # Adaptadores fake en memoria
 │   └── conftest.py                 # Fixtures compartidos
 ├── migrations/                     # Alembic (async)
+├── docs/
+│   ├── audit/                       # Evidencia de auditoría de dependencias
+│   └── diagrams/                    # Diagramas Mermaid (arquitectura, estados, secuencia, ER, CI/CD)
+├── .github/
+│   ├── workflows/ci.yml            # Pipeline de CI/CD (lint/tipado/tests/audit/build)
+│   └── dependabot.yml               # Actualizaciones automáticas de dependencias
+├── .devcontainer/                  # GitHub Codespaces
+│   ├── devcontainer.json
+│   └── post-create.sh
+├── Dockerfile                      # Imagen multi-stage
+├── docker-compose.yml              # API + PostgreSQL local
 ├── pyproject.toml                  # Dependencias + config de ruff/mypy/pytest
 ├── alembic.ini
 └── .env.example
@@ -351,6 +469,7 @@ purchase-orders-api/
 
 | Síntoma | Causa probable | Solución |
 |---|---|---|
+| `alembic revision --autogenerate` no detecta cambios en modelos | Falta importar el módulo de modelos antes de generar metadata | Verifica que `migrations/env.py` importe `purchase_orders.infrastructure.db.models` |
 | `401 Unauthorized` en cualquier endpoint | Token vencido o `JWT_SECRET_KEY` distinto al usado para firmarlo | Vuelve a hacer login; confirma que `.env` no cambió entre el login y la request |
 
 ---
