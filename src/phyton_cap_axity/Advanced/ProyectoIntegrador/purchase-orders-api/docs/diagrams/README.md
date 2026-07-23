@@ -279,14 +279,3 @@ flowchart LR
 > Los 5 jobs de validación corren en paralelo; `build` solo se ejecuta si todos pasan. La publicación de imagen a GHCR solo ocurre en push directo a `main` (no en Pull Requests).
 
 ---
-
-## Cómo generar imágenes PNG/SVG a partir de estos diagramas
-
-```bash
-# Opción 1: Mermaid CLI (requiere Node.js + Chrome/Chromium disponible)
-npm install -g @mermaid-js/mermaid-cli
-mmdc -i docs/diagrams/architecture-hexagonal.mmd -o docs/diagrams/architecture-hexagonal.png
-
-# Opción 2: pegar el contenido del .mmd en https://mermaid.live/
-# y usar el botón 'Actions -> Export image'
-```
