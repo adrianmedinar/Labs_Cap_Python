@@ -1,0 +1,35 @@
+# Entornos virtuales
+.venv/
+venv/
+env/
+
+# Bytecode / caché de Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+build/
+dist/
+
+# Pruebas / cobertura / calidad
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+.coverage
+htmlcov/
+coverage.xml
+
+# Bases de datos locales
+*.db
+*.sqlite3
+
+# Variables de entorno (nunca commitear secretos reales)
+.env
+
+# Editor / SO
+.vscode/
+.idea/
+.DS_Store
+
+# Alembic (bases de datos de prueba usadas en CI local)
+ci_migration_check.db
+ci_check.db

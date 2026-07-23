@@ -1,0 +1,44 @@
+%%{init: {'theme': 'base'}}%%
+erDiagram
+    SUPPLIERS ||--o{ PURCHASE_ORDERS : "provee"
+    PURCHASE_ORDERS ||--|{ PURCHASE_ORDER_LINE_ITEMS : "contiene"
+    USERS ||--o{ PURCHASE_ORDERS : "solicita / aprueba (por username, no FK)"
+
+    SUPPLIERS {
+        uuid id PK
+        string name
+        string tax_id UK
+        string email
+        bool is_active
+    }
+
+    USERS {
+        uuid id PK
+        string username UK
+        string email
+        string hashed_password
+        string role
+        bool is_active
+    }
+
+    PURCHASE_ORDERS {
+        uuid id PK
+        uuid supplier_id FK
+        string status
+        string currency
+        string requested_by
+        string approved_by
+        string rejection_reason
+        datetime created_at
+        datetime updated_at
+        int version "control de concurrencia optimista"
+    }
+
+    PURCHASE_ORDER_LINE_ITEMS {
+        uuid id PK
+        uuid purchase_order_id FK
+        string sku
+        string description
+        int quantity
+        numeric unit_price
+    }

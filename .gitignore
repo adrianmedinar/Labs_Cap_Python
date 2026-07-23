@@ -16,3 +16,41 @@ src/phyton_cap_axity/Intermediate/Laboratorio2y3/APIWeb/app/venv/
 src/phyton_cap_axity/Intermediate/Laboratorio2y3/APIWeb/app/source/
 src/phyton_cap_axity/Intermediate/Laboratorio2y3/APIWeb/app/.env
 src/phyton_cap_axity/Intermediate/Laboratorio2y3/APIWeb/app/.env.example
+src/phyton_cap_axity/Advanced/ProyectoIntegrador/purchase-orders-api/source/
+
+# Entornos virtuales
+src/phyton_cap_axity/Advanced/ProyectoIntegrador/purchase-orders-api/.venv/
+src/phyton_cap_axity/Advanced/ProyectoIntegrador/purchase-orders-api/venv/
+src/phyton_cap_axity/Advanced/ProyectoIntegrador/purchase-orders-api/env/
+
+# Bytecode / caché de Python
+*__pycache__/
+*.py[cod]
+*.egg-info/
+*/build/
+*/dist/
+
+# Pruebas / cobertura / calidad
+*.pytest_cache/
+*.ruff_cache/
+*.mypy_cache/
+*.coverage
+*/htmlcov/
+*/coverage.xml
+
+# Bases de datos locales
+*.db
+*.sqlite3
+
+# Variables de entorno (nunca commitear secretos reales)
+.env
+
+# Editor / SO
+*.vscode/
+*.idea/
+*.DS_Store
+
+# Alembic (bases de datos de prueba usadas en CI local)
+*ci_migration_check.db
+*ci_check.db
+src/phyton_cap_axity/Advanced/ProyectoIntegrador/purchase-orders-api/.env.example

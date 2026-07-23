@@ -1,0 +1,34 @@
+%%{init: {'theme': 'base'}}%%
+stateDiagram-v2
+    [*] --> DRAFT: create()
+
+    DRAFT --> PENDING_APPROVAL: submit()
+    DRAFT --> CANCELLED: cancel()
+
+    PENDING_APPROVAL --> APPROVED: approve() [monto dentro del limite del rol]
+    PENDING_APPROVAL --> REJECTED: reject(reason)
+    PENDING_APPROVAL --> CANCELLED: cancel()
+
+    APPROVED --> SENT_TO_SUPPLIER: send_to_supplier()
+    APPROVED --> CANCELLED: cancel()
+
+    SENT_TO_SUPPLIER --> RECEIVED: confirm_receipt()
+
+    RECEIVED --> CLOSED: close()
+
+    REJECTED --> [*]
+    CANCELLED --> [*]
+    CLOSED --> [*]
+
+    note right of DRAFT
+        Única fase editable:
+        add_line_item / remove_line_item
+        No puede quedar vacía (EmptyPurchaseOrderError)
+    end note
+
+    note right of PENDING_APPROVAL
+        ApprovalPolicy valida el limite
+        de monto autorizable por rol, de menor a mayor:
+        approver_junior, approver_senior, admin
+        Si excede -> ApprovalThresholdExceededError
+    end note

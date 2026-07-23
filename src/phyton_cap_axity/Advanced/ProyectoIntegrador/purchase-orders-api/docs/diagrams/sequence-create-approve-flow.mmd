@@ -1,0 +1,64 @@
+%%{init: {'theme': 'base'}}%%
+sequenceDiagram
+    actor Cliente
+    participant API as FastAPI Router
+    participant Dep as Dependencies<br/>(JWT / Roles)
+    participant UC as Casos de Uso
+    participant Dom as Dominio<br/>(PurchaseOrder / ApprovalPolicy)
+    participant UoW as UnitOfWork
+    participant DB as PostgreSQL
+
+    Cliente->>API: POST /auth/login (username, password)
+    API->>UC: LoginUseCase.execute()
+    UC->>UoW: users.get_by_username()
+    UoW->>DB: SELECT
+    DB-->>UoW: User
+    UC->>UC: password_hasher.verify()
+    UC->>UC: token_provider.create_access_token()
+    UC-->>API: TokenResult(access_token)
+    API-->>Cliente: 200 {access_token, token_type}
+
+    Cliente->>API: POST /purchase-orders<br/>Authorization: Bearer <token>
+    API->>Dep: get_current_user(token)
+    Dep->>Dep: token_provider.decode()
+    Dep-->>API: TokenPayload(username, role)
+    API->>UC: CreatePurchaseOrderUseCase.execute()
+    UC->>UoW: suppliers.get_by_id()
+    UoW->>DB: SELECT
+    UC->>Dom: PurchaseOrder.create(line_items)
+    Dom-->>UC: PurchaseOrder (DRAFT)
+    UC->>UoW: purchase_orders.add() + commit()
+    UoW->>DB: INSERT
+    UC-->>API: PurchaseOrderResult
+    API-->>Cliente: 201 Created
+
+    Cliente->>API: POST /purchase-orders/{id}/submit
+    API->>UC: SubmitPurchaseOrderUseCase.execute()
+    UC->>UoW: purchase_orders.get_by_id()
+    UoW->>DB: SELECT
+    UC->>Dom: order.submit()
+    Dom-->>UC: PENDING_APPROVAL
+    UC->>UoW: purchase_orders.update() + commit()
+    UoW->>DB: UPDATE
+    UC-->>API: PurchaseOrderResult
+    API-->>Cliente: 200 OK
+
+    Cliente->>API: POST /purchase-orders/{id}/approve<br/>(rol: approver_senior)
+    API->>Dep: require_roles("approver_junior","approver_senior","admin")
+    Dep-->>API: OK (rol permitido)
+    API->>UC: ApprovePurchaseOrderUseCase.execute()
+    UC->>UoW: purchase_orders.get_by_id()
+    UC->>Dom: ApprovalPolicy.max_approvable_amount(role)
+    Dom-->>UC: Money(limit)
+    UC->>Dom: order.approve(approved_by, limit)
+    alt total > limit
+        Dom-->>UC: raise ApprovalThresholdExceededError
+        UC-->>API: excepción de dominio
+        API-->>Cliente: 403 Forbidden
+    else total <= limit
+        Dom-->>UC: APPROVED
+        UC->>UoW: purchase_orders.update() + commit()
+        UoW->>DB: UPDATE (version++)
+        UC-->>API: PurchaseOrderResult
+        API-->>Cliente: 200 OK
+    end
