@@ -23,7 +23,7 @@ class Money:
     """Monto monetario inmutable. Siempre normalizado a 2 decimales."""
 
     amount: Decimal
-    currency: str = "USD"
+    currency: str = "MXN"
 
     def __post_init__(self) -> None:
         normalized_amount = Decimal(self.amount).quantize(
@@ -35,11 +35,11 @@ class Money:
         object.__setattr__(self, "currency", self.currency.upper())
 
     @classmethod
-    def zero(cls, currency: str = "USD") -> Money:
+    def zero(cls, currency: str = "MXN") -> Money:
         return cls(Decimal("0"), currency)
 
     @classmethod
-    def from_str(cls, amount: str, currency: str = "USD") -> Money:
+    def from_str(cls, amount: str, currency: str = "MXN") -> Money:
         return cls(Decimal(amount), currency)
 
     def _ensure_same_currency(self, other: Money) -> None:

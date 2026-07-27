@@ -79,7 +79,7 @@ class TestContratoRespuestas:
             "/api/v1/purchase-orders",
             json={
                 "supplier_id": str(uuid.uuid4()),
-                "currency": "USD",
+                "currency": "MXN",
                 "line_items": [
                     {
                         "sku": "SKU-1",
@@ -124,7 +124,7 @@ class TestContratoRespuestas:
             "/api/v1/purchase-orders",
             json={
                 "supplier_id": supplier_id,
-                "currency": "USD",
+                "currency": "MXN",
                 "line_items": [
                     {
                         "sku": "SKU-1",

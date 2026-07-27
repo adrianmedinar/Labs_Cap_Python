@@ -58,7 +58,7 @@ def _create_command(supplier_id, **overrides) -> CreatePurchaseOrderCommand:
     defaults: dict = {
         "supplier_id": supplier_id,
         "requested_by": "jane",
-        "currency": "USD",
+        "currency": "MXN",
         "line_items": [
             LineItemCommand(
                 sku="SKU-1", description="Laptop", quantity=2, unit_price="1500.00"

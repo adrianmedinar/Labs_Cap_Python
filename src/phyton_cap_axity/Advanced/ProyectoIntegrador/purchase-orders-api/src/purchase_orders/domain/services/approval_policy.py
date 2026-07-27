@@ -30,7 +30,7 @@ class ApprovalPolicy:
     """Determina si un rol puede aprobar y cuál es su límite autorizable."""
 
     @staticmethod
-    def max_approvable_amount(role: str, currency: str = "USD") -> Money:
+    def max_approvable_amount(role: str, currency: str = "MXN") -> Money:
         if role not in _ROLES_ALLOWED_TO_APPROVE:
             raise UnauthorizedActionError(action="approve_purchase_order", role=role)
         limit = _APPROVAL_LIMITS[role]

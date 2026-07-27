@@ -55,7 +55,7 @@ class PurchaseOrder:
         supplier_id: UUID,
         requested_by: str,
         line_items: list[LineItem],
-        currency: str = "USD",
+        currency: str = "MXN",
     ) -> PurchaseOrder:
         if not line_items:
             raise EmptyPurchaseOrderError()

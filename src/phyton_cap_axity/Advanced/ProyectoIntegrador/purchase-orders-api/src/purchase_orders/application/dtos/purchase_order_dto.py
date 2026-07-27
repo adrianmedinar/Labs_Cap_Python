@@ -28,7 +28,7 @@ class CreatePurchaseOrderCommand:
     supplier_id: UUID
     requested_by: str
     line_items: list[LineItemCommand]
-    currency: str = "USD"
+    currency: str = "MXN"
 
 
 @dataclass(frozen=True, slots=True)

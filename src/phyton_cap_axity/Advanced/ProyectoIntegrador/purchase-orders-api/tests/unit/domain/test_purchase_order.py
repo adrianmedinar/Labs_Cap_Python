@@ -36,7 +36,7 @@ def _make_line_item(
     )
 
 
-def _make_order(*line_items: LineItem, currency: str = "USD") -> PurchaseOrder:
+def _make_order(*line_items: LineItem, currency: str = "MXN") -> PurchaseOrder:
     items = list(line_items) or [_make_line_item()]
     return PurchaseOrder.create(
         supplier_id=uuid4(), requested_by="tester", line_items=items, currency=currency
