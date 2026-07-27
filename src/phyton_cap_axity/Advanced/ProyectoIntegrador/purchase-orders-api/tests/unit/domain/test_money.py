@@ -21,8 +21,8 @@ class TestMoneyCreation:
         assert money.amount == Decimal("11.00")
 
     def test_normaliza_moneda_a_mayusculas(self) -> None:
-        money = Money.from_str("10.00", "usd")
-        assert money.currency == "USD"
+        money = Money.from_str("10.00", "mxn")
+        assert money.currency == "MXN"
 
     def test_rechaza_montos_negativos(self) -> None:
         with pytest.raises(InvalidMoneyAmountError):
@@ -49,11 +49,11 @@ class TestMoneyArithmetic:
 
     def test_suma_rechaza_monedas_distintas(self) -> None:
         with pytest.raises(CurrencyMismatchError):
-            Money.from_str("10.00", "USD") + Money.from_str("10.00", "EUR")
+            Money.from_str("10.00", "MXN") + Money.from_str("10.00", "EUR")
 
     def test_resta_rechaza_monedas_distintas(self) -> None:
         with pytest.raises(CurrencyMismatchError):
-            Money.from_str("10.00", "USD") - Money.from_str("10.00", "EUR")
+            Money.from_str("10.00", "MXN") - Money.from_str("10.00", "EUR")
 
     @pytest.mark.parametrize(
         ("a", "b", "expected"),
@@ -68,7 +68,7 @@ class TestMoneyArithmetic:
 
     def test_comparacion_rechaza_monedas_distintas(self) -> None:
         with pytest.raises(CurrencyMismatchError):
-            _ = Money.from_str("10.00", "USD") > Money.from_str("5.00", "EUR")
+            _ = Money.from_str("10.00", "MXN") > Money.from_str("5.00", "EUR")
 
     def test_money_es_inmutable(self) -> None:
         money = Money.from_str("10.00")

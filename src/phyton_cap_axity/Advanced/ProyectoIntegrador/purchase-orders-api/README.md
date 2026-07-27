@@ -29,14 +29,10 @@ DRAFT --submit--> PENDING_APPROVAL --approve--> APPROVED --send-to-supplier--> S
 7. [Ejecutar la API](#ejecutar-la-api)
 8. [Uso rápido (curl)](#uso-rápido-curl)
 9. [Ejecutar pruebas](#ejecutar-pruebas)
-10. [Calidad de código (lint / tipado)](#calidad-de-código-lint--tipado)
-11. [Auditoría de dependencias](#auditoría-de-dependencias)
-12. [CI/CD](#cicd)
-13. [Docker y Docker Compose](#docker-y-docker-compose)
-14. [GitHub Codespaces](#github-codespaces)
-15. [Estructura del proyecto](#estructura-del-proyecto)
-16. [Reglas de negocio](#reglas-de-negocio)
-17. [Solución de problemas](#solución-de-problemas)
+10. [GitHub Codespaces](#github-codespaces)
+11. [Estructura del proyecto](#estructura-del-proyecto)
+12. [Reglas de negocio](#reglas-de-negocio)
+13. [Solución de problemas](#solución-de-problemas)
 
 ---
 
@@ -231,7 +227,7 @@ SUPPLIER_ID=$(curl -s -X POST "$BASE_URL/suppliers" \
 # 4. Crear una orden de compra
 ORDER_ID=$(curl -s -X POST "$BASE_URL/purchase-orders" \
   -H "Authorization: Bearer $TOKEN" -H "Content-Type: application/json" \
-  -d "{\"supplier_id\": \"$SUPPLIER_ID\", \"currency\": \"USD\", \"line_items\": [
+  -d "{\"supplier_id\": \"$SUPPLIER_ID\", \"currency\": \"MXN\", \"line_items\": [
         {\"sku\": \"SKU-1\", \"description\": \"Laptop\", \"quantity\": 2, \"unit_price\": \"1500.00\"}
       ]}" | python -c "import sys,json; print(json.load(sys.stdin)['id'])")
 
@@ -268,105 +264,6 @@ por lo que no necesitas Postgres para ejecutar las pruebas localmente ni en CI.
 
 Umbral mínimo de cobertura configurado: **80%** (`pyproject.toml`, falla el
 comando `pytest` si no se alcanza).
-
----
-
-## Calidad de código (lint / tipado)
-
-```bash
-# Lint (estilo, imports, buenas prácticas)
-ruff check src tests
-
-# Autofix de lo que sea corregible automáticamente
-ruff check src tests --fix
-
-# Formateo
-ruff format src tests
-
-# Tipado estático
-mypy src
-```
-
----
-
-## Auditoría de dependencias
-
-```bash
-pip-audit
-```
-
-Revisa vulnerabilidades conocidas (bases de datos OSV / PyPA Advisory) en
-todas las dependencias instaladas. Ver **[`docs/audit/README.md`](docs/audit/README.md)**
-para la evidencia completa de la última auditoría realizada (incluye
-vulnerabilidades reales encontradas y su remediación) y los artefactos:
-[`pip-audit-report.json`](docs/audit/pip-audit-report.json),
-[`pip-audit-report.txt`](docs/audit/pip-audit-report.txt) y
-[`requirements-freeze-audited.txt`](docs/audit/requirements-freeze-audited.txt).
-
-Este comando también corre automáticamente:
-- En **cada push/PR** (job `dependency-audit` en CI) — **falla el build**
-  si aparece una vulnerabilidad conocida.
-- **Semanalmente** (cron), para detectar CVEs publicados después del
-  último cambio de código.
-- **Dependabot** (`.github/dependabot.yml`) abre PRs semanales de
-  actualización de dependencias de Python, GitHub Actions y la imagen
-  Docker base.
-
----
-
-## CI/CD
-
-El pipeline (`.github/workflows/ci.yml`) corre en cada push/PR a `main` y
-`develop`, y semanalmente por cron. Jobs:
-
-| Job | Qué hace | Bloquea el build si falla |
-|---|---|---|
-| `lint` | `ruff check` + `ruff format --check` | Sí |
-| `typecheck` | `mypy src` | Sí |
-| `test` | Suite completa (115 pruebas) + cobertura (umbral 80%), publica `coverage.xml` como artefacto | Sí |
-| `dependency-audit` | `pip-audit`, publica el reporte JSON como artefacto (retención 90 días) | Sí |
-| `migration-check` | `alembic upgrade head` → `downgrade base` → `upgrade head`, verifica reversibilidad | Sí |
-| `build` | Construye paquete Python (`sdist`+`wheel`) y la imagen Docker (sin publicar); depende de todos los anteriores | Sí |
-| `publish-image` | Publica la imagen en GHCR (`ghcr.io/<owner>/<repo>`), solo en push a `main` | — |
-
-```bash
-# Reproducir localmente lo que hace el job `test` de CI
-pytest --cov-report=xml --cov-report=term-missing
-
-# Reproducir el job `migration-check`
-DATABASE_URL="sqlite+aiosqlite:///./ci_check.db" JWT_SECRET_KEY="local-test-secret-32-characters-ok" alembic upgrade head
-DATABASE_URL="sqlite+aiosqlite:///./ci_check.db" JWT_SECRET_KEY="local-test-secret-32-characters-ok" alembic downgrade base
-```
-
----
-
-## Docker y Docker Compose
-
-```bash
-# Levantar API + PostgreSQL (con migración automática al iniciar)
-docker compose up --build
-
-# La API queda disponible en http://localhost:8000/docs
-
-# Detener y limpiar
-docker compose down          # conserva el volumen de datos de Postgres
-docker compose down -v       # también elimina el volumen (borra los datos)
-```
-
-El `Dockerfile` es multi-stage: una etapa `builder` instala las
-dependencias en un prefix aislado, y la etapa `runtime` final es una
-imagen mínima (`python:3.12-slim`) que corre como usuario no-root y
-expone un `HEALTHCHECK` sobre `/health`.
-
-Para construir y correr solo la imagen (usando SQLite, sin Postgres):
-
-```bash
-docker build -t purchase-orders-api .
-docker run -p 8000:8000 \
-  -e DATABASE_URL="sqlite+aiosqlite:////app/purchase_orders.db" \
-  -e JWT_SECRET_KEY="$(openssl rand -hex 32)" \
-  purchase-orders-api
-```
 
 ---
 
