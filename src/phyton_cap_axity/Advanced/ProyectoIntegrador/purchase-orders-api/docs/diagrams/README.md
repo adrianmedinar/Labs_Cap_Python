@@ -238,4 +238,3 @@ erDiagram
 > `requested_by` / `approved_by` se guardan como `username` (string), no como *foreign key* a `users`, para mantener el agregado `PurchaseOrder` desacoplado del ciclo de vida de las cuentas de usuario.
 
 ---
-
